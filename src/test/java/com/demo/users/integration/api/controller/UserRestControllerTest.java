@@ -1,11 +1,11 @@
 package com.demo.users.integration.api.controller;
 
-import com.demo.users.integration.adapter.LocalDateAdapter;
-import com.demo.users.integration.adapter.LocalDateDesAdapter;
-import com.demo.users.integration.annotation.IT;
 import com.demo.users.api.dto.SearchUsersDto;
 import com.demo.users.api.dto.UserCreateReplaceDto;
 import com.demo.users.api.dto.UserReadDto;
+import com.demo.users.integration.adapter.LocalDateAdapter;
+import com.demo.users.integration.adapter.LocalDateDesAdapter;
+import com.demo.users.integration.annotation.IT;
 import com.demo.users.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.Gson;
@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -138,6 +139,24 @@ class UserRestControllerTest {
     }
 
     @Test
+    void replaceUser_when_invalidRequest() throws Exception {
+
+        UserCreateReplaceDto newDto = new UserCreateReplaceDto("test2@gmail.com",
+                "FirstName", "LastName", LocalDate.of(1990, 2, 22), null, null);
+
+        String dtoJson = gson.toJson(newDto);
+        mockMvc.perform(put("/api/v1/users/" + "testId")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(dtoJson)
+
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResponseStatusException));
+
+
+    }
+
+    @Test
     void editUser_when_validRequest() throws Exception {
 
         UserReadDto resultDto = userService.create(userTestDto);
@@ -164,20 +183,39 @@ class UserRestControllerTest {
     }
 
     @Test
-    void deleteUser_when_validRequest() throws Exception {
-
-        UserReadDto resultDto = userService.create(userTestDto);
+    void editUser_when_invalidRequest() throws Exception {
 
         UserCreateReplaceDto newDto = new UserCreateReplaceDto();
         newDto.setEmail("testEmail@gmail.com");
 
         String dtoJson = gson.toJson(newDto);
-        mockMvc.perform(delete("/api/v1/users/" + resultDto.getId())
+        mockMvc.perform(patch("/api/v1/users/" + "testId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(dtoJson)
 
                 )
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResponseStatusException));
+
+    }
+
+    @Test
+    void deleteUser_when_validRequest() throws Exception {
+
+        UserReadDto resultDto = userService.create(userTestDto);
+
+        mockMvc.perform(delete("/api/v1/users/" + resultDto.getId()))
                 .andExpect(status().isOk());
+
+    }
+
+    @Test
+    void deleteUser_when_invalidRequest() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/users/" + "testId"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResponseStatusException));
+
 
     }
 
