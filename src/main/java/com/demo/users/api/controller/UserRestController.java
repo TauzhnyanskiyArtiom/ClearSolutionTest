@@ -6,15 +6,12 @@ import com.demo.users.api.dto.UserCreateReplaceDto;
 import com.demo.users.api.dto.UserEditDto;
 import com.demo.users.api.dto.UserReadDto;
 import com.demo.users.service.UserService;
-import com.demo.users.validation.SearchByBirthDate;
-import com.demo.users.validation.group.CreateAction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.groups.Default;
 import java.util.List;
 
 @RestController
@@ -25,15 +22,13 @@ public class UserRestController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserReadDto> getUsers(@RequestBody @Validated SearchUsersDto searchUsersDto){
+    public List<UserReadDto> getUsers(@RequestBody @Validated SearchUsersDto searchUsersDto) {
         return userService.getUsersByBirthDate(searchUsersDto);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserReadDto create(@RequestBody
-                           @Validated({Default.class, CreateAction.class})
-                                      UserCreateReplaceDto userCreateReplaceDto) {
+    public UserReadDto create(@RequestBody @Validated UserCreateReplaceDto userCreateReplaceDto) {
         return userService.create(userCreateReplaceDto);
     }
 

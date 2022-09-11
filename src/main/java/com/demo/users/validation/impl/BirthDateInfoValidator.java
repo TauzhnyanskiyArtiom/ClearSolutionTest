@@ -16,6 +16,9 @@ public class BirthDateInfoValidator implements ConstraintValidator<BirthDateInfo
 
     @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
+        if(value == null)
+            return true;
+
         int yearsOldUser = LocalDate.now().getYear() - value.getYear();
         return yearsOldUser >= yearsOldMore;
     }

@@ -1,7 +1,6 @@
 package com.demo.users.api.dto;
 
 import com.demo.users.validation.BirthDateInfo;
-import com.demo.users.validation.group.CreateAction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,7 +32,7 @@ public class UserCreateReplaceDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Birth date is required")
     @Past(message = "Birth date must be earlier than current date")
-    @BirthDateInfo(groups = CreateAction.class)
+    @BirthDateInfo
     private LocalDate birthDate;
 
     private String address;
